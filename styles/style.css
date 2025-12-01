@@ -1,0 +1,114 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead th {
+    position: sticky;
+    top: 0;
+    background: #f2f2f2;
+    font-weight: 600;
+    padding: 10px 16px;
+    text-align: left;
+
+    border-bottom: 1px solid #cfcfcf;
+
+    border-right: 1px solid #d4d4d4;
+}
+
+thead th:last-child {
+    border-right: none;
+}
+
+tbody td {
+    padding: 14px 16px;
+
+    border-bottom: 1px solid #e5e5e5;
+
+    border-right: 1px solid #ededed;
+}
+
+tbody td:last-child {
+    border-right: none;
+}
+
+tbody tr:hover {
+    background: #f8f8f8;
+}
+
+/* ----- FORM ----- */
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #fafafa;
+}
+
+/* контейнер форми */
+.form-container {
+    width: 280px;
+    padding: 20px;
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
+
+/* заголовок */
+.form-container h2 {
+    margin: 0 0 16px 0;
+    font-size: 18px;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* поле */
+.field {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 12px;
+}
+
+.field label {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 4px;
+}
+
+.field input {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.field input:focus {
+    outline: none;
+    border-color: #999;
+}
+
+button {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    background: #f2f2f2;
+    border: 1px solid #bbb;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #e8e8e8;
+}
+
+button:active {
+    background: #ddd;
+}

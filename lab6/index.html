@@ -1,11 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../styles/style.css">
+</head>
 <body>
-<h2>Лабораторна 6</h2>
-<input id="n" placeholder="n">
-<input id="min" placeholder="Min">
-<input id="max" placeholder="Max">
-<button id="run">Виконати</button>
+
+<div class="form-container">
+
+    <div class="field">
+        <label for="n">Enter n</label>
+        <input id="n" placeholder="Enter n value">
+    </div>
+
+    <div class="field">
+        <label for="min">Enter min</label>
+        <input id="min" placeholder="Enter minimum value">
+    </div>
+
+    <div class="field">
+        <label for="max">Enter max</label>
+        <input id="max" placeholder="Enter maximum value">
+    </div>
+
+    <button id="run">Execute</button>
+</div>
+
 <script src="renderer.js"></script>
 </body>
 </html>
