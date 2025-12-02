@@ -3,34 +3,31 @@ import path from "path";
 
 let win: BrowserWindow;
 
-const [,, nArg, minArg, maxArg] = process.argv;
-console.log("object2 debug");
-console.log("Raw args:", process.argv);
-console.log("nArg:", nArg, "minArg:", minArg, "maxArg:", maxArg);
+function generateAndSendData(nStr: string, minStr: string, maxStr: string) {
+  const n = Number(nStr);
+  const min = Number(minStr);
+  const max = Number(maxStr);
 
-const n = Number(nArg);
-const min = Number(minArg);
-const max = Number(maxArg);
+  if (isNaN(n) || isNaN(min) || isNaN(max)) {
+    console.error("Invalid input for object2:", { n, min, max });
+    return;
+  }
 
-console.log("Parsed n:", n, "min:", min, "max:", max);
-
-function generatePoints() {
   const arr: { x: number; y: number }[] = [];
   for (let i = 0; i < n; i++) {
     const v = min + Math.random() * (max - min);
     arr.push({ x: i + 1, y: Number(v.toFixed(2)) });
   }
-  return arr;
+
+  const jsonData = JSON.stringify(arr);
+  clipboard.writeText(jsonData);
+  console.log("Written to clipboard:", jsonData.substring(0, 100) + "...");
+  console.log("CLIPBOARD_READY");
+
+  if (win) {
+    win.webContents.send("points", arr);
+  }
 }
-
-const points = generatePoints();
-console.log("Generated points:", points);
-
-const jsonData = JSON.stringify(points);
-clipboard.writeText(jsonData);
-console.log("Written to clipboard:", jsonData.substring(0, 100) + "...");
-
-console.log("CLIPBOARD_READY");
 
 function createWindow() {
   win = new BrowserWindow({
@@ -44,18 +41,22 @@ function createWindow() {
   });
 
   const htmlPath = path.resolve(__dirname, "..", "object2", "index.html");
-  console.log("Loading HTML from:", htmlPath);
-
   win.loadFile(htmlPath);
 
-  win.webContents.once("did-finish-load", () => {
-    console.log("Window loaded, sending points:", points);
-    win.webContents.send("points", points);
+  win.on("closed", () => {
+    process.exit(0);
   });
 
-  win.on("closed", () => {
-    console.log("object2 window closed");
-    process.exit(0);
+  // Handle initial data
+  const [,, nArg, minArg, maxArg] = process.argv;
+  win.webContents.once("did-finish-load", () => {
+    generateAndSendData(nArg, minArg, maxArg);
+  });
+
+  // Handle new data from stdin
+  process.stdin.on('data', (data) => {
+    const [n, min, max] = data.toString().trim().split(' ');
+    generateAndSendData(n, min, max);
   });
 }
 
