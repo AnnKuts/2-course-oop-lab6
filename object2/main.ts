@@ -33,6 +33,8 @@ function createWindow() {
   win = new BrowserWindow({
     width: 400,
     height: 600,
+    x: 0,
+    y: 350,
     webPreferences: {
       preload: path.join(__dirname, "object2_preload.js"),
       contextIsolation: true,
@@ -47,13 +49,11 @@ function createWindow() {
     process.exit(0);
   });
 
-  // Handle initial data
   const [,, nArg, minArg, maxArg] = process.argv;
   win.webContents.once("did-finish-load", () => {
     generateAndSendData(nArg, minArg, maxArg);
   });
 
-  // Handle new data from stdin
   process.stdin.on('data', (data) => {
     const [n, min, max] = data.toString().trim().split(' ');
     generateAndSendData(n, min, max);

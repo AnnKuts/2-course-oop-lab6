@@ -30,3 +30,4 @@ let chart: any = null;
     });
   }
 });
+

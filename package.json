@@ -1,15 +1,17 @@
 {
   "name": "2-course-oop-lab6",
   "version": "1.0.0",
+  "main": "dist/lab6_main.js",
   "private": true,
   "scripts": {
     "build": "webpack --mode development",
-    "start:lab6": "electron ./dist/lab6_main.js",
+    "start": "electron .",
+    "start:dialogWindow": "electron ./dist/dialogWindow_main.js",
     "start:object2": "electron ./dist/object2_main.js",
-    "start:object3": "electron ./dist/object3_main.js"
+    "start:object3": "electron ./dist/object3_main.js",
+    "start:lab6": "electron ./dist/lab6_main.js"
   },
   "devDependencies": {
-    "@types/node": "^20.11.0",
     "ts-loader": "^9.5.4",
     "typescript": "^5.4.2",
     "webpack": "^5.103.0",

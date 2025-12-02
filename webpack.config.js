@@ -5,9 +5,9 @@ module.exports = [
   {
     mode: "development",
     entry: {
-      lab6_main: "./lab6/main.ts",
       object2_main: "./object2/main.ts",
       object3_main: "./object3/main.ts",
+      lab6_main: "./lab6/main.ts",
     },
     target: "electron-main",
     externals: [nodeExternals()],
@@ -30,9 +30,10 @@ module.exports = [
   {
     mode: "development",
     entry: {
-      lab6_preload: "./lab6/preload.ts",
+      dialogWindow_preload: "./dialogWindow/preload.ts",
       object2_preload: "./object2/preload.ts",
       object3_preload: "./object3/preload.ts",
+      lab6_preload: "./lab6/preload.ts",
     },
     target: "electron-preload",
     externals: [nodeExternals()],
@@ -49,9 +50,10 @@ module.exports = [
   {
     mode: "development",
     entry: {
-      lab6_renderer: "./lab6/renderer.ts",
+      dialogWindow_renderer: "./dialogWindow/renderer.ts",
       object2_renderer: "./object2/renderer.ts",
       object3_renderer: "./object3/renderer.ts",
+      lab6_renderer: "./lab6/renderer.ts",
     },
     target: "electron-renderer",
     module: {

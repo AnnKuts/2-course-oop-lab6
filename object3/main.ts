@@ -20,6 +20,8 @@ function createWindow() {
   win = new BrowserWindow({
     width: 600,
     height: 500,
+    x: 450,
+    y: 350,
     webPreferences: { preload: path.join(__dirname, "object3_preload.js") }
   });
 

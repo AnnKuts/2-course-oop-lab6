@@ -2,86 +2,96 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
 import { spawn, ChildProcessWithoutNullStreams } from 'child_process';
 
-let win: BrowserWindow | null = null;
-let childObject2: ChildProcessWithoutNullStreams | null = null;
-let childObject3: ChildProcessWithoutNullStreams | null = null;
-
-let isQuitting = false;
+let lab6Win: BrowserWindow | null = null;
+let dialogWin: BrowserWindow | null = null;
+let object2Process: ChildProcessWithoutNullStreams | null = null;
+let object3Process: ChildProcessWithoutNullStreams | null = null;
 
 function killAll() {
-  if (isQuitting) return;
-  isQuitting = true;
-
-  console.log("Killing all processes...");
-
-  try { if (childObject2) childObject2.kill("SIGTERM"); } catch {}
-  try { if (childObject3) childObject3.kill("SIGTERM"); } catch {}
-
+  console.log("Killing all child processes...");
+  if (object2Process) {
+    object2Process.kill("SIGTERM");
+  }
+  if (object3Process) {
+    object3Process.kill("SIGTERM");
+  }
   app.quit();
 }
 
-function createWindow() {
-  win = new BrowserWindow({
-    width: 600,
-    height: 500,
+function createLab6Window() {
+  lab6Win = new BrowserWindow({
+    width: 400,
+    height: 300,
+    x: 0,
+    y: 0,
     webPreferences: {
       preload: path.join(__dirname, 'lab6_preload.js'),
       contextIsolation: true,
-      nodeIntegration: false
-    }
+      nodeIntegration: false,
+    },
   });
 
-  win.loadFile(path.resolve(__dirname, "..", "lab6", "index.html"));
+  lab6Win.loadFile(path.resolve(__dirname, '..', 'lab6', 'index.html'));
 
-  win.on("closed", () => {
-    win = null;
+  lab6Win.on('closed', () => {
     killAll();
   });
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(createLab6Window);
 
-ipcMain.handle("start-object2", async (_, n, min, max) => {
-  if (childObject2) {
-    childObject2.stdin.write(`${n} ${min} ${max}\n`);
-    return true;
+ipcMain.handle('start-dialog', () => {
+  if (dialogWin) {
+    dialogWin.focus();
+    return;
   }
 
-  childObject2 = spawn(process.execPath, [
-    path.join(__dirname, "object2_main.js"),
-    String(n),
-    String(min),
-    String(max)
-  ], { stdio: ['pipe', 'pipe', 'pipe'] });
-
-  childObject2.on("exit", () => {
-    childObject2 = null;
+  dialogWin = new BrowserWindow({
+    width: 400,
+    height: 400,
+    webPreferences: {
+      preload: path.join(__dirname, 'dialogWindow_preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+    },
   });
 
-  return new Promise<boolean>((resolve) => {
-    const onData = (data: Buffer) => {
-      if (data.toString().includes("CLIPBOARD_READY")) {
-        childObject2?.stdout?.removeListener('data', onData);
-        resolve(true);
-      }
-    };
-    childObject2.stdout?.on('data', onData);
+  dialogWin.loadFile(path.resolve(__dirname, '..', 'dialogWindow', 'index.html'));
+
+  dialogWin.on('closed', () => {
+    dialogWin = null;
   });
 });
 
-ipcMain.handle("start-object3", async () => {
-  if (childObject3) {
-    childObject3.stdin.write('update\n');
-    return true;
+ipcMain.handle('execute', (_, data: { n: number, min: number, max: number }) => {
+  const { n, min, max } = data;
+
+  if (object2Process) {
+    object2Process.stdin.write(`${n} ${min} ${max}\n`);
+  } else {
+    object2Process = spawn(process.execPath, [path.join(__dirname, "object2_main.js"), String(n), String(min), String(max)], { stdio: ['pipe', 'pipe', 'pipe'] });
+    object2Process.on("exit", () => { object2Process = null; });
   }
 
-  childObject3 = spawn(process.execPath, [
-    path.join(__dirname, "object3_main.js")
-  ], { stdio: ['pipe', 'pipe', 'pipe'] });
+  if (object3Process) {
+    setTimeout(() => {
+      object3Process?.stdin.write('update\n');
+    }, 200);
+  } else {
+    setTimeout(() => {
+      object3Process = spawn(process.execPath, [path.join(__dirname, "object3_main.js")], { stdio: ['pipe', 'pipe', 'pipe'] });
+      object3Process.on("exit", () => { object3Process = null; });
+    }, 200);
+  }
 
-  childObject3.on("exit", () => {
-    childObject3 = null;
-  });
-
-  return true;
+  if (dialogWin) {
+    dialogWin.close();
+  }
 });
+
+ipcMain.handle('cancel', () => {
+  if (dialogWin) {
+    dialogWin.close();
+  }
+});
+
