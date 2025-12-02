@@ -77,15 +77,17 @@ async function run(): Promise<void> {
     return;
   }
 
-  await (window as any).api.startObject2(
+  const ok = await (window as any).api.startObject2(
     input.n,
     input.min,
     input.max
   );
 
-  setTimeout(() => {
-    (window as any).api.startObject3();
-  }, 500);
+  if (ok) {
+    await (window as any).api.startObject3();
+  } else {
+    showFormError("Failed to start object2");
+  }
 }
 
 runButton.addEventListener("click", run);

@@ -15,7 +15,7 @@ const max = Number(maxArg);
 console.log("Parsed n:", n, "min:", min, "max:", max);
 
 function generatePoints() {
-  const arr = [];
+  const arr: { x: number; y: number }[] = [];
   for (let i = 0; i < n; i++) {
     const v = min + Math.random() * (max - min);
     arr.push({ x: i + 1, y: Number(v.toFixed(2)) });
@@ -29,6 +29,8 @@ console.log("Generated points:", points);
 const jsonData = JSON.stringify(points);
 clipboard.writeText(jsonData);
 console.log("Written to clipboard:", jsonData.substring(0, 100) + "...");
+
+console.log("CLIPBOARD_READY");
 
 function createWindow() {
   win = new BrowserWindow({

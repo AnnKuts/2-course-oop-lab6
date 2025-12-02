@@ -44,27 +44,53 @@ ipcMain.handle("start-object2", async (_, n, min, max) => {
 
   await new Promise(resolve => setTimeout(resolve, 100));
 
+  // Запускаємо object2 та пробрасываем stdout/stderr (pipe), щоб читати маркер
   childObject2 = spawn(process.execPath, [
     path.join(__dirname, "object2_main.js"),
     String(n),
     String(min),
     String(max)
-  ]);
+  ], { stdio: ['ignore', 'pipe', 'pipe'] });
 
   childObject2.stdout?.on('data', (data) => {
-    console.log(`object2 stdout: ${data}`);
+    console.log(`object2 stdout: ${data.toString()}`);
   });
 
   childObject2.stderr?.on('data', (data) => {
-    console.error(`object2 stderr: ${data}`);
+    console.error(`object2 stderr: ${data.toString()}`);
   });
 
-  childObject2.on("exit", (code) => {
-    console.log(`object2 exited with code ${code}`);
-    killAll();
-  });
+  // Чекаємо явного маркера CLIPBOARD_READY в stdout
+  return await new Promise<boolean>((resolve) => {
+    const onStdout = (data: Buffer) => {
+      const s = data.toString();
+      console.log(`object2 stdout (watch): ${s}`);
+      if (s.includes("CLIPBOARD_READY")) {
+        cleanupListeners();
+        resolve(true);
+      }
+    };
 
-  return true;
+    const onStderr = (data: Buffer) => {
+      console.error(`object2 stderr (watch): ${data.toString()}`);
+    };
+
+    const onExit = (code: number | null) => {
+      console.log(`object2 exited with code ${code}`);
+      cleanupListeners();
+      resolve(true);
+    };
+
+    const cleanupListeners = () => {
+      childObject2?.stdout?.off('data', onStdout);
+      childObject2?.stderr?.off('data', onStderr);
+      childObject2?.off('exit', onExit);
+    };
+
+    childObject2?.stdout?.on('data', onStdout);
+    childObject2?.stderr?.on('data', onStderr);
+    childObject2?.on('exit', onExit);
+  });
 });
 
 ipcMain.handle("start-object3", async () => {
@@ -79,14 +105,14 @@ ipcMain.handle("start-object3", async () => {
 
   childObject3 = spawn(process.execPath, [
     path.join(__dirname, "object3_main.js")
-  ]);
+  ], { stdio: ['ignore', 'pipe', 'pipe'] });
 
   childObject3.stdout?.on('data', (data) => {
-    console.log(`object3 stdout: ${data}`);
+    console.log(`object3 stdout: ${data.toString()}`);
   });
 
   childObject3.stderr?.on('data', (data) => {
-    console.error(`object3 stderr: ${data}`);
+    console.error(`object3 stderr: ${data.toString()}`);
   });
 
   childObject3.on("exit", (code) => {
