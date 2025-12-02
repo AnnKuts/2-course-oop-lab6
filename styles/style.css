@@ -42,7 +42,6 @@ tbody tr:hover {
     background: #f8f8f8;
 }
 
-/* ----- FORM ----- */
 
 body {
     display: flex;
@@ -51,7 +50,6 @@ body {
     background: #fafafa;
 }
 
-/* контейнер форми */
 .form-container {
     width: 280px;
     padding: 20px;
@@ -68,7 +66,6 @@ body {
     text-align: center;
 }
 
-/* поле */
 .field {
     display: flex;
     flex-direction: column;
@@ -111,4 +108,22 @@ button:hover {
 
 button:active {
     background: #ddd;
+}
+
+#form-error {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #d9534f;
+    text-align: center;
+    min-height: 16px;
+}
+
+.field input.error {
+    border-color: #d9534f;
+    background-color: #fff5f5;
+}
+
+.field input.error:focus {
+    border-color: #d9534f;
+    box-shadow: 0 0 0 2px rgba(217, 83, 79, 0.1);
 }
