@@ -44,7 +44,6 @@ ipcMain.handle("start-object2", async (_, n, min, max) => {
 
   await new Promise(resolve => setTimeout(resolve, 100));
 
-  // Запускаємо object2 та пробрасываем stdout/stderr (pipe), щоб читати маркер
   childObject2 = spawn(process.execPath, [
     path.join(__dirname, "object2_main.js"),
     String(n),
