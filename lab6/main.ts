@@ -35,26 +35,64 @@ function createWindow() {
 app.whenReady().then(createWindow);
 
 ipcMain.handle("start-object2", async (_, n, min, max) => {
-  if (childObject2) return true;
+  if (childObject2) {
+    try {
+      childObject2.kill("SIGTERM");
+    } catch {}
+    childObject2 = null;
+  }
+
+  await new Promise(resolve => setTimeout(resolve, 100));
 
   childObject2 = spawn(process.execPath, [
     path.join(__dirname, "object2_main.js"),
-    n, min, max
+    String(n),
+    String(min),
+    String(max)
   ]);
 
-  childObject2.on("exit", () => killAll());
+  childObject2.stdout?.on('data', (data) => {
+    console.log(`object2 stdout: ${data}`);
+  });
+
+  childObject2.stderr?.on('data', (data) => {
+    console.error(`object2 stderr: ${data}`);
+  });
+
+  childObject2.on("exit", (code) => {
+    console.log(`object2 exited with code ${code}`);
+    killAll();
+  });
 
   return true;
 });
 
 ipcMain.handle("start-object3", async () => {
-  if (childObject3) return true;
+  if (childObject3) {
+    try {
+      childObject3.kill("SIGTERM");
+    } catch {}
+    childObject3 = null;
+  }
+
+  await new Promise(resolve => setTimeout(resolve, 100));
 
   childObject3 = spawn(process.execPath, [
     path.join(__dirname, "object3_main.js")
   ]);
 
-  childObject3.on("exit", () => killAll());
+  childObject3.stdout?.on('data', (data) => {
+    console.log(`object3 stdout: ${data}`);
+  });
+
+  childObject3.stderr?.on('data', (data) => {
+    console.error(`object3 stderr: ${data}`);
+  });
+
+  childObject3.on("exit", (code) => {
+    console.log(`object3 exited with code ${code}`);
+    killAll();
+  });
 
   return true;
 });
